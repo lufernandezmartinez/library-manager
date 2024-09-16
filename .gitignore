@@ -1,2 +1,2 @@
 # Ignore book data and saved state
-books/*
+server/books/*
