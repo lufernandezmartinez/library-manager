@@ -5,6 +5,9 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+// Author       -> Luis Fernandez Martinez
+// Last update  -> 17/09/2024
+
 import server.modules.Book;
 import server.modules.Bookshelf;
 public class app{
@@ -33,20 +36,58 @@ public class app{
             }
             System.out.println("We recieved a message!: " + message);
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());//create ObjectOutputStream object
-            switch (message) {
-                case "menu":
+            switch (message.charAt(0)+"") {
+                case "0": // SHOW MENU
+                System.out.println("Returning menu...");
                     message=
                         "\n-- DIGITAL LIBRARY --"+
-                        "\n Author: lufernandezmartinez "+
+                        "\n 0.- Show menu (again)"+
                         "\n 1.- List all books"+
                         "\n 2.- Add a book"+
                         "\n 3.- Delete a book"+
-                        "\n 4.- Quit"
+                        "\n 4.- Load data from file"+
+                        "\n 5.- Save data to file"+                        
+                        "\n 6.- Clear loaded data"+
+                        "\n 7.- Clear data file"+
+                        "\n 8.- Quit"
                     ;
                     break;
-                case "1":
+                case "1": // LIST BOOKS
                     message = bookshelf.listBooks();
                     break;
+                case "2": // ADD BOOKS
+                    Book b = Bookshelf.validateBook(message);
+                    if(b.getName().length() != 0){
+                        b.setId(Bookshelf.getLastID(bookshelf));
+                        bookshelf.addBook(b);
+                        message="Book "+b.getName()+" added succesfully";
+                    }else{
+                        message="Error while adding the book. Check any spell error.";
+                    }
+                    break;
+                case "3":
+                try {
+                    if(bookshelf.removeBook(Integer.parseInt(message.substring(1,message.length())))){
+                        message = "Book removed succesfully";}
+                } catch (Exception e) {
+                    message = "Error while deleting book " +e;
+                }
+                    break;
+                case "4":
+
+                    break;
+                case "5":
+
+                    break;
+                case "6":
+
+                    break;
+                case "7":
+
+                    break;
+                case ("8"):
+                    //TBH you shouldnt get here at any point
+                    message = "Exit option";
                 default:
                     message = "Invalid option";
                     break;
@@ -59,7 +100,7 @@ public class app{
             oos.close();
             socket.close();
             //terminate the server if client sends exit request
-            if(message.equalsIgnoreCase("exit")) break;
+            if(message.equalsIgnoreCase("8")) break;
         }
         System.out.println("Shutting down Socket server!!");
         //close the ServerSocket object

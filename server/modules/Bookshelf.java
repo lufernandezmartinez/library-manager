@@ -11,6 +11,9 @@ public class Bookshelf {
     }
 
     // BOOKSHELF METHODS
+    private ArrayList<Book> getBookshelf(){
+        return this.bookshelf;
+    }
     public boolean addBook(Book book){
         try {
             this.bookshelf.add(book);
@@ -41,9 +44,36 @@ public class Bookshelf {
             return "This bookshelf is empty!";
         }else{
             for (Book b : this.bookshelf) {
-                booklist = booklist + "\n"+b.getId() + " " + b.getName() +" "+b.getAuthor();
+                booklist = booklist + "\n"+b.getId() + " | " + b.getName() +" | "+b.getAuthor();
             }
             return booklist;
         }
+    }
+    public static int getLastID(Bookshelf b){
+        try {
+            Book book = b.bookshelf.get(b.getBookshelf().size()-1);
+            return book.getId()+1;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+    public static Book validateBook(String message){
+        Book b = new Book();
+        String name = "";
+        String author = "";
+        // Book syntax
+        // name|author
+        message = message.substring(1,message.length()); // remove option number
+        for(int i=0;i<message.length();i++){
+            if(message.charAt(i)=='|'){
+                name = message.substring(0,i);
+                author = message.substring(i+1,message.length());
+            }
+        }
+        if(name.length()!=0 && author.length() != 0){
+            b.setName(name);
+            b.setAuthor(author);
+        }
+        return b;
     }
 }
