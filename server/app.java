@@ -4,6 +4,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 // Author       -> Luis Fernandez Martinez
 // Last update  -> 17/09/2024
@@ -12,18 +15,32 @@ import server.modules.Book;
 import server.modules.Bookshelf;
 public class app{
     private static ServerSocket server;
-    private static int port = 1234;
+    public static int port = 1234;
+    static Scanner keyboard = new Scanner(System.in);
     public static void main(String[] args) throws IOException{
+        
+
+        Bookshelf bookshelf = new Bookshelf();
+        
+        /* Example books
         Book b1 = new Book(1, "El ingenioso hidalgo de la mancha", "Miguel de Cervantes Saavedra");
         Book b2 = new Book(2,"La metamorfosis", "Franz Kafka");
         Book b3 = new Book(3,"Libro de ejemplo", "John Doe");
-        Bookshelf bookshelf = new Bookshelf();
         bookshelf.addBook(b1);
         bookshelf.addBook(b2);
         bookshelf.addBook(b3);
+        */
 
+        System.out.println("Type a port to listen (leave empty if 1234)");
+        String tempPort = keyboard.nextLine();
+        try {
+            port = Integer.parseInt(tempPort);
+        } catch (Exception e) {
+            port = 1234;
+        }
         server = new ServerSocket(port);
         while(true){
+            System.out.println("\n-- DIGITAL LIBRARY --\nServer Side\nServer running");
             System.out.println("Waiting for the client request");
             Socket socket = server.accept();
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
@@ -73,23 +90,46 @@ public class app{
                     message = "Error while deleting book " +e;
                 }
                     break;
-                case "4":
-
+                case "4": // LOAD DATA
+                try (FileInputStream fileIn = new FileInputStream("bookshelf.ser");
+                    ObjectInputStream in = new ObjectInputStream(fileIn)) {
+                    bookshelf = (Bookshelf) in.readObject();
+                    message = "Loaded succesfully";
+                } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+                    message = "Error while loading "+e;
+                }
                     break;
-                case "5":
-
+                case "5": // SAVE DATA
+                    try (FileOutputStream fileOut = new FileOutputStream("bookshelf.ser");
+                        ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+                        out.writeObject(bookshelf);   
+                        message = "Saved succesfully";
+                    }catch (IOException e) {
+                        e.printStackTrace();
+                        message = "Error while saving "+e.toString();
+                    }
                     break;
-                case "6":
-
+                case "6":// Clear the current bookshelf
+                    bookshelf = new Bookshelf();
+                    message ="Current bookshelf emptied";
                     break;
-                case "7":
-
+                case "7":// Clear data file
+                    Bookshelf tempShelf = new Bookshelf();
+                    try (FileOutputStream fileOut = new FileOutputStream("bookshelf.ser");
+                        ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+                        out.writeObject(tempShelf);   
+                        message = "Wiped data succesfully";
+                    }catch (IOException e) {
+                        e.printStackTrace();
+                        message = "Error while wiping "+e.toString();
+                    }
                     break;
                 case ("8"):
                     //TBH you shouldnt get here at any point
                     message = "Exit option";
                 default:
-                    message = "Invalid option";
+                    message = "Invalid option, try again";
                     break;
             }
             oos.writeObject(message);//write object to Socket

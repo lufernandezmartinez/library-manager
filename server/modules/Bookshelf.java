@@ -1,10 +1,12 @@
 package server.modules;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Bookshelf {
+public class Bookshelf implements Serializable {
     ArrayList<Book> bookshelf;
     int idCont;
+    private static final long serialVersionUID = 1L;
     public Bookshelf(){
         this.bookshelf = new ArrayList<Book>();
         this.idCont = 1;

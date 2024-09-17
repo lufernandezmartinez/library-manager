@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class app {
@@ -54,9 +53,9 @@ public class app {
 
             switch (message) {
                 case "2": // ADDBOOK
-                    System.out.println("Adding book.\nGive me the book name\n");
+                    System.out.println("Adding book.\nGive me the book name");
                     String name = keyboard.nextLine();
-                    System.out.println("Give me the book author\n");
+                    System.out.println("Give me the book author");
                     String author = keyboard.nextLine();
                     message=message+name+"|"+author;
                     break;
